@@ -46,6 +46,52 @@
     a { color: #006a5d; }
     a:hover { color: #004d43; }
     hr { border: none; border-top: 1px solid #e0e0e0; margin: 40px 0; }
+
+    /* Screenshot styles */
+    .screenshot-box { 
+        border: 2px dashed #006a5d; 
+        border-radius: 12px; 
+        padding: 24px; 
+        margin: 16px 0; 
+        background: #f8fdfc; 
+        text-align: center;
+        position: relative;
+    }
+    .screenshot-box img { 
+        max-width: 100%; 
+        height: auto; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+    .screenshot-placeholder { 
+        color: #006a5d; 
+        font-style: italic; 
+        font-size: 14px; 
+    }
+    .screenshot-label { 
+        display: inline-block; 
+        background: #006a5d; 
+        color: white; 
+        padding: 4px 12px; 
+        border-radius: 20px; 
+        font-size: 12px; 
+        font-weight: 600; 
+        margin-bottom: 12px; 
+    }
+    .screenshot-instruction { 
+        background: #e8f5f2; 
+        border-left: 4px solid #006a5d; 
+        padding: 12px 16px; 
+        margin: 16px 0; 
+        border-radius: 0 8px 8px 0; 
+        font-size: 13px; 
+    }
+    .screenshot-instruction strong { color: #006a5d; }
+    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+    .step-card { background: white; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; }
+    .step-card-header { background: #006a5d; color: white; padding: 12px 16px; font-weight: 600; }
+    .step-card-body { padding: 16px; }
 </style>
 </head>
 <body>
@@ -730,32 +776,242 @@
 <hr/>
 
 <section>
-    <h2><span class="section-number">6·</span> Execution & Evidence</h2>
-    <p>Run the app from Android Studio on an emulator or physical device and capture each stage below.</p>
+    <h2><span class="section-number">6·</span> Execution & Evidence — Screenshot Guide</h2>
+    
+    <div class="screenshot-instruction">
+        <strong>📸 How to capture screenshots:</strong> Run the app on an emulator (API 34) or physical device. Use <kbd>Ctrl</kbd>+<kbd>S</kbd> (Linux/Windows) or <kbd>Cmd</kbd>+<kbd>S</kbd> (Mac) in Android Studio's Device Manager, or press <kbd>Power</kbd>+<kbd>Volume Down</kbd> on a physical device. Save screenshots as <code>step-1-empty-form.png</code>, <code>step-2-validation-errors.png</code>, etc., in an <code>screenshots/</code> folder alongside this HTML file. Then replace each placeholder image below.
+    </div>
 
-    <h3>Step 1 — App launches with empty form</h3>
-    <p><em>Screenshot placeholder: empty form showing "Farmer Records" title, three outlined fields (Farmer Name/Reference, Crop, Quantity), "Add Record" button, "Records: 0", empty list area.</em></p>
+    <div class="step-grid">
+        <!-- Step 1 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 1 — Empty Form (Cold Launch)</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-1-empty-form.png" alt="Step 1: Empty form on launch" class="screenshot-img" style="display:none;">
+                    <p class="screenshot-placeholder" id="step1-placeholder">
+                        <strong>What to capture:</strong> App just launched, showing "Farmer Records" title, three empty outlined fields (Farmer Name/Reference, Crop, Quantity), "Add Record" button, "Records: 0", empty list area.<br>
+                        <em>File: <code>screenshots/step-1-empty-form.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>launch-empty-001</code></p>
+            </div>
+        </div>
 
-    <h3>Step 2 — Validation errors on submit with missing/invalid data</h3>
-    <p><em>Screenshot placeholder: red error text under each field — "Please enter farmer name or reference", "Please enter crop name", "Please enter quantity in kg". Record count still 0, list empty.</em></p>
+        <!-- Step 2 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 2 — All Fields Validation Errors</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-2-validation-errors.png" alt="Step 2: Validation errors on all fields" class="screenshot-img" style="display:none;">
+                    <p class="screenshot-placeholder" id="step2-placeholder">
+                        <strong>What to capture:</strong> Tap "Add Record" with all fields empty. Red error text under each field: "Please enter farmer name or reference", "Please enter crop name", "Please enter quantity in kg". Record count still 0, list empty.<br>
+                        <em>File: <code>screenshots/step-2-validation-errors.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>validation-all-empty-002</code></p>
+            </div>
+        </div>
 
-    <h3>Step 3 — Quantity validation: negative, non-numeric, non-finite</h3>
-    <p><em>Screenshot placeholders showing each error variant: "Quantity cannot be negative", "Quantity must be a valid number", "Quantity must be a finite number".</em></p>
+        <!-- Step 3 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 3 — Quantity Validation Variants</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-3-quantity-negative.png" alt="Step 3a: Negative quantity error" class="screenshot-img" style="display:none; max-height:200px;">
+                    <p class="screenshot-placeholder" id="step3a-placeholder">
+                        <strong>What to capture (3a):</strong> Enter valid name & crop, then <strong>negative quantity</strong> (e.g., "-10"). Error: "Quantity cannot be negative".<br>
+                        <em>File: <code>screenshots/step-3-quantity-negative.png</code></em>
+                    </p>
+                </div>
+                <div class="screenshot-box" style="margin-top:8px;">
+                    <img src="screenshots/step-3-quantity-nonnumeric.png" alt="Step 3b: Non-numeric quantity error" class="screenshot-img" style="display:none; max-height:200px;">
+                    <p class="screenshot-placeholder" id="step3b-placeholder">
+                        <strong>What to capture (3b):</strong> Enter <strong>non-numeric text</strong> in quantity (e.g., "abc"). Error: "Quantity must be a valid number".<br>
+                        <em>File: <code>screenshots/step-3-quantity-nonnumeric.png</code></em>
+                    </p>
+                </div>
+                <div class="screenshot-box" style="margin-top:8px;">
+                    <img src="screenshots/step-3-quantity-nonfinite.png" alt="Step 3c: Non-finite quantity error" class="screenshot-img" style="display:none; max-height:200px;">
+                    <p class="screenshot-placeholder" id="step3c-placeholder">
+                        <strong>What to capture (3c):</strong> Enter <strong>non-finite value</strong> (e.g., "Infinity"). Error: "Quantity must be a finite number".<br>
+                        <em>File: <code>screenshots/step-3-quantity-nonfinite.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence IDs: <code>validation-qty-neg-003</code>, <code>validation-qty-nonnumeric-004</code>, <code>validation-qty-nonfinite-005</code></p>
+            </div>
+        </div>
 
-    <h3>Step 4 — Valid record added</h3>
-    <p><em>Screenshot placeholder: form filled (e.g., "John Kamau", "Maize", "50.5"), after tap "Add Record" — form clears, record appears at top of list: "John Kamau — Maize / 50.50 kg", count shows "Records: 1".</em></p>
+        <!-- Step 4 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 4 — Valid Record Added</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-4-valid-record.png" alt="Step 4: Valid record added to list" class="screenshot-img" style="display:none;">
+                    <p class="screenshot-placeholder" id="step4-placeholder">
+                        <strong>What to capture:</strong> Fill form (e.g., "John Kamau", "Maize", "50.5"), tap "Add Record". Form clears, record appears at top: "John Kamau — Maize / 50.50 kg", count shows "Records: 1".<br>
+                        <em>File: <code>screenshots/step-4-valid-record.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>valid-record-added-006</code></p>
+            </div>
+        </div>
 
-    <h3>Step 5 — Multiple records</h3>
-    <p><em>Screenshot placeholder: list with 3–4 records, newest at top, count updates accordingly.</em></p>
+        <!-- Step 5 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 5 — Multiple Records</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-5-multiple-records.png" alt="Step 5: Multiple records in list" class="screenshot-img" style="display:none;">
+                    <p class="screenshot-placeholder" id="step5-placeholder">
+                        <strong>What to capture:</strong> Add 3–4 records (e.g., different farmers/crops). Newest at top. Count updates: "Records: 4".<br>
+                        <em>File: <code>screenshots/step-5-multiple-records.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>multiple-records-007</code></p>
+            </div>
+        </div>
 
-    <h3>Step 6 — Rotation with partially completed form</h3>
-    <p><em>Screenshot placeholder: form half-filled (e.g., name and crop entered), rotate device → form values restored, list and count unchanged.</em></p>
+        <!-- Step 6 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 6 — Rotation (Draft Values Restored)</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-6-rotation-before.png" alt="Step 6a: Before rotation" class="screenshot-img" style="display:none; max-height:200px;">
+                    <p class="screenshot-placeholder" id="step6a-placeholder">
+                        <strong>What to capture (6a — BEFORE rotation):</strong> Partially fill form (e.g., name "Jane" and crop "Beans" entered, quantity empty).<br>
+                        <em>File: <code>screenshots/step-6-rotation-before.png</code></em>
+                    </p>
+                </div>
+                <div class="screenshot-box" style="margin-top:8px;">
+                    <img src="screenshots/step-6-rotation-after.png" alt="Step 6b: After rotation" class="screenshot-img" style="display:none; max-height:200px;">
+                    <p class="screenshot-placeholder" id="step6b-placeholder">
+                        <strong>What to capture (6b — AFTER rotation):</strong> Rotate device (portrait ↔ landscape). Form values restored ("Jane", "Beans"), list and count unchanged.<br>
+                        <em>File: <code>screenshots/step-6-rotation-after.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>rotation-test-008</code></p>
+            </div>
+        </div>
 
-    <h3>Step 7 — Home / Return</h3>
-    <p>Press Home, reopen app from launcher → Activity recreated, draft values restored (if rotation didn't happen, they're still in memory), list and count intact.</p>
+        <!-- Step 7 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 7 — Home / Return</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-7-home-return.png" alt="Step 7: Home/return state" class="screenshot-img" style="display:none;">
+                    <p class="screenshot-placeholder" id="step7-placeholder">
+                        <strong>What to capture:</strong> Press Home, wait 2s, reopen app from launcher. Draft values (if any) restored, list and count intact. <em>Note: This may look identical to Step 6 "after" — capture the logcat showing onRestart→onStart→onResume instead if visual difference is minimal.</em><br>
+                        <em>File: <code>screenshots/step-7-home-return.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>home-return-009</code></p>
+            </div>
+        </div>
 
-    <h3>Step 8 — Process restart</h3>
-    <p>Swipe app away from Recents, relaunch → <strong>draft values lost</strong> (expected), <strong>record list lost</strong> (expected — in-memory only). This demonstrates that <code>onSaveInstanceState</code> does not survive process death; persistent storage would be needed for that.</p>
+        <!-- Step 8 -->
+        <div class="step-card">
+            <div class="step-card-header">Step 8 — Process Restart (Data Lost)</div>
+            <div class="step-card-body">
+                <div class="screenshot-box">
+                    <span class="screenshot-label">📷 INSERT SCREENSHOT</span>
+                    <img src="screenshots/step-8-process-restart.png" alt="Step 8: After process restart" class="screenshot-img" style="display:none;">
+                    <p class="screenshot-placeholder" id="step8-placeholder">
+                        <strong>What to capture:</strong> Swipe app away from Recents (kill process). Relaunch app. Form empty, list empty, count "Records: 0". This proves in-memory state does not survive process death.<br>
+                        <em>File: <code>screenshots/step-8-process-restart.png</code></em>
+                    </p>
+                </div>
+                <p style="font-size:13px; color:#666;">Evidence ID: <code>process-restart-010</code></p>
+            </div>
+        </div>
+    </div>
+
+    <hr style="margin: 40px 0;">
+
+    <h3>📋 Screenshot Checklist</h3>
+    <table class="validation-table">
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Filename</th>
+                <th>What It Proves</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><code>step-1-empty-form.png</code></td>
+                <td>App launches correctly with Material theme</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><code>step-2-validation-errors.png</code></td>
+                <td>All three required-field validations work</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>3a</td>
+                <td><code>step-3-quantity-negative.png</code></td>
+                <td>Negative quantity rejected</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>3b</td>
+                <td><code>step-3-quantity-nonnumeric.png</code></td>
+                <td>Non-numeric quantity rejected</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>3c</td>
+                <td><code>step-3-quantity-nonfinite.png</code></td>
+                <td>Non-finite quantity rejected</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><code>step-4-valid-record.png</code></td>
+                <td>Valid input accepted, list updates, count increments</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><code>step-5-multiple-records.png</code></td>
+                <td>Multiple records display, newest first, count accurate</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><code>step-6-rotation-before.png</code>, <code>step-6-rotation-after.png</code></td>
+                <td>Draft values survive rotation via <code>onSaveInstanceState</code></td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><code>step-7-home-return.png</code></td>
+                <td>State survives Home/return (process alive)</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><code>step-8-process-restart.png</code></td>
+                <td>In-memory state lost on process restart (expected)</td>
+                <td class="fail">⬜ Pending</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tip">
+        <strong>💡 Tip:</strong> After taking screenshots, create a <code>screenshots/</code> folder next to this HTML file and place all PNG files there. Then open this HTML in a browser — the images will appear automatically. For PDF submission, use your browser's "Print → Save as PDF" with "Background graphics" enabled.
+    </div>
 </section>
 
 <hr/>
