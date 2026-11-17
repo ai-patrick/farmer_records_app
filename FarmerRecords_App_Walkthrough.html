@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+<title>Farmer Records App — Lab Walkthrough</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    body { font-family: Inter, system-ui, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; color: #181b1b; background: #fafafa; }
+    h1 { font-size: 28px; color: #181b1b; border-bottom: 2px solid #006a5d; padding-bottom: 10px; }
+    h2 { font-size: 22px; color: #181b1b; margin-top: 40px; }
+    h3 { font-size: 18px; color: #3f4945; }
+    h4 { font-size: 16px; color: #3f4945; }
+    .meta { color: #3f4945; font-size: 14px; margin-bottom: 20px; }
+    .meta span { margin-right: 20px; }
+    .objective { background: #e8f5f2; border-left: 4px solid #006a5d; padding: 16px; margin: 20px 0; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin: 20px 0; }
+    .feature { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; }
+    .feature-icon { font-size: 24px; margin-bottom: 8px; }
+    .feature-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+    .feature-desc { font-size: 14px; color: #3f4945; }
+    .component-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    .component-table th, .component-table td { border: 1px solid #e0e0e0; padding: 12px; text-align: left; }
+    .component-table th { background: #f0f0f0; font-weight: 600; }
+    .component-table code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+    .section { margin-top: 40px; }
+    .section-number { color: #006a5d; font-weight: bold; font-size: 24px; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .comment { color: #6a9955; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .method { color: #dcdcaa; }
+    .code-block .annotation { color: #d4d4d4; }
+    .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 16px 0; }
+    .tip { background: #e8f5f2; border-left: 4px solid #006a5d; padding: 12px; margin: 16px 0; }
+    .workflow { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+    .workflow-step { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 16px; min-width: 140px; text-align: center; }
+    .workflow-step .step-icon { font-size: 20px; margin-bottom: 4px; }
+    .workflow-step .step-label { font-size: 13px; font-weight: 500; }
+    .validation-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    .validation-table th, .validation-table td { border: 1px solid #e0e0e0; padding: 10px; text-align: left; }
+    .validation-table th { background: #f0f0f0; }
+    .validation-table .pass { color: #2e7d32; }
+    .validation-table .fail { color: #c62828; }
+    pre { margin: 0; }
+    .file-label { background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; margin-bottom: 8px; display: inline-block; }
+    a { color: #006a5d; }
+    a:hover { color: #004d43; }
+    hr { border: none; border-top: 1px solid #e0e0e0; margin: 40px 0; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Building a Farmer Records App with Validation, RecyclerView & Lifecycle Handling</h1>
+    <div class="meta">
+        <span>👤 Patrick Kilonzo Mbithi</span>
+        <span>🆔 SCT211-0036/2025</span>
+        <span>🎓 BSc Computer Science</span>
+        <span>👨‍🏫 Dr. Lawrence Nderu</span>
+    </div>
+</header>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">1·</span> Lab Objective</h2>
+    <div class="objective">
+        <p>The goal of this lab is to build an interactive Android screen that <strong>collects farmer record input</strong> (farmer name/reference, crop, and quantity in kg), <strong>validates</strong> each field, <strong>displays accepted records in a RecyclerView list</strong> with a live record count, and <strong>handles lifecycle events</strong> (launch, Home, return, rotation) correctly. By the end of this lab the app can:</p>
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">⌨</div>
+            <div class="feature-title">Capture Input</div>
+            <div class="feature-desc">Material <code>TextInputLayout</code> + <code>TextInputEditText</code> fields for farmer name, crop, and quantity with floating labels and built-in error text.</div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">✅</div>
+            <div class="feature-title">Validate</div>
+            <div class="feature-desc">Reject missing identity, blank crop, blank/negative/non-numeric/non-finite quantity. Zero is allowed (valid zero harvest event).</div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📋</div>
+            <div class="feature-title">List & Count</div>
+            <div class="feature-desc"><code>RecyclerView</code> with adapter shows each accepted record; live count updates on every insert.</div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Lifecycle</div>
+            <div class="feature-desc">Draft values survive rotation via <code>onSaveInstanceState</code>; records persist in-memory during process lifetime; process restart loses in-memory state (not persistent storage).</div>
+        </div>
+    </div>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">2·</span> How the App Works</h2>
+    <p>Before writing code, it helps to see the user journey. The app has a single screen with a form at the top and a live list below. The decision point: is the form valid?</p>
+
+    <div class="workflow">
+        <div class="workflow-step">
+            <div class="step-icon">🚀</div>
+            <div class="step-label">Launch app</div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-icon">✏️</div>
+            <div class="step-label">Fill farmer name, crop, quantity</div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-icon">🔘</div>
+            <div class="step-label">Tap Add Record</div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-icon">✅</div>
+            <div class="step-label">Validate input</div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-icon">❌</div>
+            <div class="step-label">Invalid? Show field errors</div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-icon">✅</div>
+            <div class="step-label">Valid? Add to list, update count, clear form</div>
+        </div>
+    </div>
+
+    <h3>Component Map</h3>
+    <table class="component-table">
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Purpose in this app</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>TextInputLayout</code> + <code>TextInputEditText</code></td>
+                <td>Outlined, accessible text fields with floating labels and built-in error text for farmer name, crop, quantity.</td>
+            </tr>
+            <tr>
+                <td><code>Button</code></td>
+                <td>Triggers validation and, on success, adds record to list.</td>
+            </tr>
+            <tr>
+                <td><code>RecyclerView</code> + <code>Adapter</code></td>
+                <td>Displays accepted records efficiently; updates on insert.</td>
+            </tr>
+            <tr>
+                <td><code>TextView</code> (record count)</td>
+                <td>Shows live count of records in the list.</td>
+            </tr>
+            <tr>
+                <td><code>onSaveInstanceState</code> / <code>onCreate</code></td>
+                <td>Retains draft field values across rotation; does not survive process restart.</td>
+            </tr>
+            <tr>
+                <td><code>FarmerRecord</code> (model class)</td>
+                <td>Immutable data holder for a single record (farmerName, crop, quantity).</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">3·</span> User Interface (<code>activity_main.xml</code>)</h2>
+    <p>The whole form sits inside a <code>ScrollView</code> → <code>LinearLayout</code> so the on-screen keyboard never hides the Submit button. Each part is explained below, then the complete file is shown.</p>
+
+    <h3>3.1 Header Text</h3>
+    <p>Two <code>TextView</code>s give the screen a title and an instruction line. Bottom margins create vertical rhythm.</p>
+
+    <div class="file-label">activity_main.xml · header</div>
+    <pre class="code-block"><span class="comment"><!-- Header Text --></span>
+<span class="keyword"><TextView</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:layout_marginBottom=<span class="string">"4dp"</span>
+    android:text=<span class="string">"Farmer Records"</span>
+    android:textSize=<span class="string">"28sp"</span>
+    android:textStyle=<span class="string">"bold"</span> <span class="keyword">/></span>
+
+<span class="keyword"><TextView</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:layout_marginBottom=<span class="string">"32dp"</span>
+    android:text=<span class="string">"Enter farmer details below"</span>
+    android:textSize=<span class="string">"14sp"</span> <span class="keyword">/></span></pre>
+
+    <h3>3.2 Farmer Name / Reference Field</h3>
+    <p><code>TextInputLayout</code> wraps the <code>TextInputEditText</code>. The OutlinedBox style gives the rounded outline and floating hint. <code>textPersonName</code> tunes the keyboard for names.</p>
+
+    <div class="file-label">activity_main.xml · farmer name field</div>
+    <pre class="code-block"><span class="comment"><!-- Farmer Name / Reference --></span>
+<span class="keyword"><com.google.android.material.textfield.TextInputLayout</span>
+    android:id=<span class="string">"@+id/layoutFarmerName"</span>
+    style=<span class="string">"@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:layout_marginBottom=<span class="string">"16dp"</span>
+    android:hint=<span class="string">"Farmer Name / Reference"</span><span class="keyword">></span>
+
+    <span class="keyword"><com.google.android.material.textfield.TextInputEditText</span>
+        android:id=<span class="string">"@+id/editTextFarmerName"</span>
+        android:layout_width=<span class="string">"match_parent"</span>
+        android:layout_height=<span class="string">"wrap_content"</span>
+        android:inputType=<span class="string">"textPersonName"</span> <span class="keyword">/></span>
+<span class="keyword"></com.google.android.material.textfield.TextInputLayout></span></pre>
+
+    <h3>3.3 Crop Field</h3>
+    <p>Identical structure to the name field; hint is "Crop".</p>
+
+    <div class="file-label">activity_main.xml · crop field</div>
+    <pre class="code-block"><span class="comment"><!-- Crop --></span>
+<span class="keyword"><com.google.android.material.textfield.TextInputLayout</span>
+    android:id=<span class="string">"@+id/layoutCrop"</span>
+    style=<span class="string">"@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:layout_marginBottom=<span class="string">"16dp"</span>
+    android:hint=<span class="string">"Crop"</span><span class="keyword">></span>
+
+    <span class="keyword"><com.google.android.material.textfield.TextInputEditText</span>
+        android:id=<span class="string">"@+id/editTextCrop"</span>
+        android:layout_width=<span class="string">"match_parent"</span>
+        android:layout_height=<span class="string">"wrap_content"</span>
+        android:inputType=<span class="string">"textPersonName"</span> <span class="keyword">/></span>
+<span class="keyword"></com.google.android.material.textfield.TextInputLayout></span></pre>
+
+    <h3>3.4 Quantity Field</h3>
+    <p>Uses <code>inputType="numberDecimal"</code> to bring up the numeric keyboard with decimal point.</p>
+
+    <div class="file-label">activity_main.xml · quantity field</div>
+    <pre class="code-block"><span class="comment"><!-- Quantity (kg) --></span>
+<span class="keyword"><com.google.android.material.textfield.TextInputLayout</span>
+    android:id=<span class="string">"@+id/layoutQuantity"</span>
+    style=<span class="string">"@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:layout_marginBottom=<span class="string">"16dp"</span>
+    android:hint=<span class="string">"Quantity (kg)"</span><span class="keyword">></span>
+
+    <span class="keyword"><com.google.android.material.textfield.TextInputEditText</span>
+        android:id=<span class="string">"@+id/editTextQuantity"</span>
+        android:layout_width=<span class="string">"match_parent"</span>
+        android:layout_height=<span class="string">"wrap_content"</span>
+        android:inputType=<span class="string">"numberDecimal"</span>
+        android:hint=<span class="string">"Quantity (kg)"</span> <span class="keyword">/></span>
+<span class="keyword"></com.google.android.material.textfield.TextInputLayout></span></pre>
+
+    <h3>3.5 Submit Button</h3>
+    <p>A full-width, 56 dp tall button follows Material touch-target guidance.</p>
+
+    <div class="file-label">activity_main.xml · submit button</div>
+    <pre class="code-block"><span class="keyword"><Button</span>
+    android:id=<span class="string">"@+id/buttonSubmit"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"56dp"</span>
+    android:layout_marginTop=<span class="string">"8dp"</span>
+    android:text=<span class="string">"Add Record"</span>
+    android:textSize=<span class="string">"16sp"</span>
+    android:textStyle=<span class="string">"bold"</span> <span class="keyword">/></span></pre>
+
+    <h3>3.6 Record Count & RecyclerView</h3>
+    <p>A divider separates the form from the results area. The count <code>TextView</code> shows live total. The <code>RecyclerView</code> has <code>nestedScrollingEnabled="false"</code> so it plays nice inside the <code>ScrollView</code>.</p>
+
+    <div class="file-label">activity_main.xml · list area</div>
+    <pre class="code-block"><span class="comment"><!-- Divider --></span>
+<span class="keyword"><View</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"1dp"</span>
+    android:layout_marginTop=<span class="string">"24dp"</span>
+    android:layout_marginBottom=<span class="string">"16dp"</span>
+    android:background=<span class="string">"?android:attr/listDivider"</span> <span class="keyword">/></span>
+
+<span class="comment"><!-- Record Count --></span>
+<span class="keyword"><TextView</span>
+    android:id=<span class="string">"@+id/textViewRecordCount"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:layout_marginBottom=<span class="string">"8dp"</span>
+    android:text=<span class="string">"Records: 0"</span>
+    android:textSize=<span class="string">"16sp"</span>
+    android:textStyle=<span class="string">"bold"</span> <span class="keyword">/></span>
+
+<span class="comment"><!-- Records List --></span>
+<span class="keyword"><androidx.recyclerview.widget.RecyclerView</span>
+    android:id=<span class="string">"@+id/recyclerViewRecords"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"wrap_content"</span>
+    android:minHeight=<span class="string">"200dp"</span>
+    android:nestedScrollingEnabled=<span class="string">"false"</span> <span class="keyword">/></span></pre>
+
+    <h3>3.7 Complete Layout File</h3>
+    <details>
+        <summary>Click to expand full activity_main.xml</summary>
+        <pre class="code-block"><span class="comment"><?xml version="1.0" encoding="utf-8"?></span>
+<span class="keyword"><ScrollView</span> xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span>
+    android:layout_width=<span class="string">"match_parent"</span>
+    android:layout_height=<span class="string">"match_parent"</span>
+    android:fillViewport=<span class="string">"true"</span>
+    android:padding=<span class="string">"16dp"</span><span class="keyword">></span>
+
+    <span class="keyword"><LinearLayout</span>
+        android:layout_width=<span class="string">"match_parent"</span>
+        android:layout_height=<span class="string">"wrap_content"</span>
+        android:orientation=<span class="string">"vertical"</span>
+        android:paddingBottom=<span class="string">"24dp"</span><span class="keyword">></span>
+
+        <span class="comment"><!-- Header --></span>
+        <span class="keyword"><TextView</span> ... <span class="keyword">/></span>
+        <span class="keyword"><TextView</span> ... <span class="keyword">/></span>
+
+        <span class="comment"><!-- Farmer Name --></span>
+        <span class="keyword"><com.google.android.material.textfield.TextInputLayout</span> ... <span class="keyword">></span>
+            <span class="keyword"><com.google.android.material.textfield.TextInputEditText</span> ... <span class="keyword">/></span>
+        <span class="keyword"></com.google.android.material.textfield.TextInputLayout></span>
+
+        <span class="comment"><!-- Crop --></span>
+        <span class="keyword"><com.google.android.material.textfield.TextInputLayout</span> ... <span class="keyword">></span>
+            <span class="keyword"><com.google.android.material.textfield.TextInputEditText</span> ... <span class="keyword">/></span>
+        <span class="keyword"></com.google.android.material.textfield.TextInputLayout></span>
+
+        <span class="comment"><!-- Quantity --></span>
+        <span class="keyword"><com.google.android.material.textfield.TextInputLayout</span> ... <span class="keyword">></span>
+            <span class="keyword"><com.google.android.material.textfield.TextInputEditText</span> ... <span class="keyword">/></span>
+        <span class="keyword"></com.google.android.material.textfield.TextInputLayout></span>
+
+        <span class="comment"><!-- Submit --></span>
+        <span class="keyword"><Button</span> ... <span class="keyword">/></span>
+
+        <span class="comment"><!-- Divider --></span>
+        <span class="keyword"><View</span> ... <span class="keyword">/></span>
+
+        <span class="comment"><!-- Count --></span>
+        <span class="keyword"><TextView</span> ... <span class="keyword">/></span>
+
+        <span class="comment"><!-- RecyclerView --></span>
+        <span class="keyword"><androidx.recyclerview.widget.RecyclerView</span> ... <span class="keyword">/></span>
+
+    <span class="keyword"></LinearLayout></span>
+<span class="keyword"></ScrollView></span></pre>
+    </details>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">4·</span> Activity Logic (<code>MainActivity.java</code>)</h2>
+    <p>The Activity does four jobs: bind views → wire listeners → validate input → update list and count.</p>
+
+    <h3>4.1 Imports and View References</h3>
+    <p>Fields are declared once at class level so every method can reach them.</p>
+
+    <div class="file-label">MainActivity.java · imports</div>
+    <pre class="code-block"><span class="keyword">package</span> com.example.farmerrecords;
+
+<span class="keyword">import</span> android.os.Bundle;
+<span class="keyword">import</span> android.text.TextUtils;
+<span class="keyword">import</span> android.util.Patterns;
+<span class="keyword">import</span> android.view.View;
+<span class="keyword">import</span> android.widget.Button;
+<span class="keyword">import</span> android.widget.EditText;
+<span class="keyword">import</span> android.widget.TextView;
+<span class="keyword">import</span> android.widget.Toast;
+
+<span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;
+<span class="keyword">import</span> androidx.recyclerview.widget.LinearLayoutManager;
+<span class="keyword">import</span> androidx.recyclerview.widget.RecyclerView;
+
+<span class="keyword">import</span> com.google.android.material.textfield.TextInputLayout;
+
+<span class="keyword">import</span> java.util.ArrayList;
+<span class="keyword">import</span> java.util.List;</pre>
+
+    <div class="file-label">MainActivity.java · fields</div>
+    <pre class="code-block"><span class="keyword">public class</span> MainActivity <span class="keyword">extends</span> AppCompatActivity {
+
+    <span class="comment">// View references</span>
+    <span class="keyword">private</span> TextInputLayout layoutFarmerName, layoutCrop, layoutQuantity;
+    <span class="keyword">private</span> EditText editTextFarmerName, editTextCrop, editTextQuantity;
+    <span class="keyword">private</span> Button buttonSubmit;
+    <span class="keyword">private</span> TextView textViewRecordCount;
+    <span class="keyword">private</span> RecyclerView recyclerViewRecords;
+
+    <span class="comment">// Data</span>
+    <span class="keyword">private</span> List<FarmerRecord> recordList = <span class="keyword">new</span> ArrayList<>();
+    <span class="keyword">private</span> RecordAdapter recordAdapter;</pre>
+
+    <h3>4.2 <code>onCreate()</code>: Binding Views and Wiring Listeners</h3>
+    <p><code>findViewById</code> connects each Java field to its XML element. The submit button click runs <code>onSubmit()</code>. Draft values are restored from <code>savedInstanceState</code> if present (rotation case).</p>
+
+    <div class="file-label">MainActivity.java · onCreate</div>
+    <pre class="code-block"><span class="annotation">@Override</span>
+<span class="keyword">protected void</span> onCreate(Bundle savedInstanceState) {
+    <span class="keyword">super</span>.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    <span class="comment">// Bind views</span>
+    layoutFarmerName = findViewById(R.id.layoutFarmerName);
+    layoutCrop = findViewById(R.id.layoutCrop);
+    layoutQuantity = findViewById(R.id.layoutQuantity);
+    editTextFarmerName = findViewById(R.id.editTextFarmerName);
+    editTextCrop = findViewById(R.id.editTextCrop);
+    editTextQuantity = findViewById(R.id.editTextQuantity);
+    buttonSubmit = findViewById(R.id.buttonSubmit);
+    textViewRecordCount = findViewById(R.id.textViewRecordCount);
+    recyclerViewRecords = findViewById(R.id.recyclerViewRecords);
+
+    <span class="comment">// Setup RecyclerView</span>
+    recordAdapter = <span class="keyword">new</span> RecordAdapter(recordList);
+    recyclerViewRecords.setLayoutManager(<span class="keyword">new</span> LinearLayoutManager(<span class="keyword">this</span>));
+    recyclerViewRecords.setAdapter(recordAdapter);
+    recyclerViewRecords.setHasFixedSize(<span class="keyword">true</span>);
+
+    <span class="comment">// Restore draft values on rotation</span>
+    <span class="keyword">if</span> (savedInstanceState != <span class="keyword">null</span>) {
+        String draftName = savedInstanceState.getString(<span class="string">"draft_farmer_name"</span>, <span class="string">""</span>);
+        String draftCrop = savedInstanceState.getString(<span class="string">"draft_crop"</span>, <span class="string">""</span>);
+        String draftQuantity = savedInstanceState.getString(<span class="string">"draft_quantity"</span>, <span class="string">""</span>);
+        editTextFarmerName.setText(draftName);
+        editTextCrop.setText(draftCrop);
+        editTextQuantity.setText(draftQuantity);
+    }
+
+    buttonSubmit.setOnClickListener(v -> onSubmit());
+}</pre>
+
+    <h3>4.3 <code>onSaveInstanceState()</code>: Retaining Draft Values Across Rotation</h3>
+    <p>Only the in-progress form fields are saved. The <strong>record list is NOT saved here</strong> — it lives in the Activity's heap and survives rotation because the Activity is recreated but the process stays alive. A process restart (swipe away from recents, then relaunch) loses this in-memory state; that is expected because we are not using persistent storage (Room, SharedPreferences, etc.) in this lab.</p>
+
+    <div class="file-label">MainActivity.java · onSaveInstanceState</div>
+    <pre class="code-block"><span class="annotation">@Override</span>
+<span class="keyword">protected void</span> onSaveInstanceState(Bundle outState) {
+    <span class="keyword">super</span>.onSaveInstanceState(outState);
+    <span class="comment">// Save draft values across rotation</span>
+    outState.putString(<span class="string">"draft_farmer_name"</span>, editTextFarmerName.getText().toString());
+    outState.putString(<span class="string">"draft_crop"</span>, editTextCrop.getText().toString());
+    outState.putString(<span class="string">"draft_quantity"</span>, editTextQuantity.getText().toString());
+}</pre>
+
+    <div class="warning">
+        <strong>⚠ Watch out.</strong> Do not describe in-memory state as persistent storage. The record list survives rotation because the process stays alive; it does <em>not</em> survive a process restart. Persistent storage would require a database (Room), SharedPreferences, or file I/O.
+    </div>
+
+    <h3>4.4 <code>onSubmit()</code>: Validation, List Update, Form Clear</h3>
+    <p>Each field is cleared of old errors first, then checked. Validation rules:</p>
+
+    <table class="validation-table">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Rule</th>
+                <th>Error Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Farmer Name / Reference</td>
+                <td>Required (non-blank after trim)</td>
+                <td>"Please enter farmer name or reference"</td>
+            </tr>
+            <tr>
+                <td>Crop</td>
+                <td>Required (non-blank after trim)</td>
+                <td>"Please enter crop name"</td>
+            </tr>
+            <tr>
+                <td>Quantity</td>
+                <td>Required, numeric, finite, ≥ 0</td>
+                <td>"Please enter quantity in kg" / "Quantity must be a valid number" / "Quantity cannot be negative" / "Quantity must be a finite number"</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tip">
+        <strong>💡 Zero is allowed.</strong> The earlier delivery exercise required a <em>positive</em> quantity; a <em>zero weekly harvest</em> is a different valid business event. We accept zero because a farmer may report no harvest for a week — that is a legitimate record, not an error.
+    </div>
+
+    <p>On success: create <code>FarmerRecord</code>, insert at position 0 (top of list), notify adapter, scroll to top, update count, clear form fields.</p>
+
+    <div class="file-label">MainActivity.java · onSubmit</div>
+    <pre class="code-block"><span class="keyword">private void</span> onSubmit() {
+    String farmerName = editTextFarmerName.getText().toString().trim();
+    String crop = editTextCrop.getText().toString().trim();
+    String quantityStr = editTextQuantity.getText().toString().trim();
+
+    <span class="comment">// Clear previous errors</span>
+    layoutFarmerName.setError(<span class="keyword">null</span>);
+    layoutCrop.setError(<span class="keyword">null</span>);
+    layoutQuantity.setError(<span class="keyword">null</span>);
+
+    <span class="keyword">boolean</span> valid = <span class="keyword">true</span>;
+
+    <span class="comment">// Validation 1: Farmer name / reference required</span>
+    <span class="keyword">if</span> (TextUtils.isEmpty(farmerName)) {
+        layoutFarmerName.setError(<span class="string">"Please enter farmer name or reference"</span>);
+        valid = <span class="keyword">false</span>;
+    }
+
+    <span class="comment">// Validation 2: Crop required</span>
+    <span class="keyword">if</span> (TextUtils.isEmpty(crop)) {
+        layoutCrop.setError(<span class="string">"Please enter crop name"</span>);
+        valid = <span class="keyword">false</span>;
+    }
+
+    <span class="comment">// Validation 3: Quantity required, numeric, non-negative, finite</span>
+    <span class="keyword">if</span> (TextUtils.isEmpty(quantityStr)) {
+        layoutQuantity.setError(<span class="string">"Please enter quantity in kg"</span>);
+        valid = <span class="keyword">false</span>;
+    } <span class="keyword">else</span> {
+        <span class="keyword">try</span> {
+            <span class="keyword">double</span> quantity = Double.parseDouble(quantityStr);
+            <span class="keyword">if</span> (quantity < 0) {
+                layoutQuantity.setError(<span class="string">"Quantity cannot be negative"</span>);
+                valid = <span class="keyword">false</span>;
+            } <span class="keyword">else if</span> (!Double.isFinite(quantity)) {
+                layoutQuantity.setError(<span class="string">"Quantity must be a finite number"</span>);
+                valid = <span class="keyword">false</span>;
+            }
+            <span class="comment">// Zero allowed — valid zero harvest event</span>
+        } <span class="keyword">catch</span> (NumberFormatException e) {
+            layoutQuantity.setError(<span class="string">"Quantity must be a valid number"</span>);
+            valid = <span class="keyword">false</span>;
+        }
+    }
+
+    <span class="keyword">if</span> (!valid) {
+        <span class="keyword">return</span>;
+    }
+
+    <span class="comment">// Create record and add to list</span>
+    <span class="keyword">double</span> quantity = Double.parseDouble(quantityStr);
+    FarmerRecord record = <span class="keyword">new</span> FarmerRecord(farmerName, crop, quantity);
+    recordList.add(0, record); <span class="comment">// Add to top</span>
+    recordAdapter.notifyItemInserted(0);
+    recyclerViewRecords.scrollToPosition(0);
+
+    <span class="comment">// Update record count</span>
+    textViewRecordCount.setText(<span class="string">"Records: "</span> + recordList.size());
+
+    <span class="comment">// Clear form</span>
+    editTextFarmerName.setText(<span class="string">""</span>);
+    editTextCrop.setText(<span class="string">""</span>);
+    editTextQuantity.setText(<span class="string">""</span>);
+}</pre>
+
+    <h3>4.5 Model Class: <code>FarmerRecord</code></h3>
+    <p>Immutable data holder. Using a separate class keeps the data clean and makes the adapter simple.</p>
+
+    <div class="file-label">MainActivity.java · FarmerRecord</div>
+    <pre class="code-block"><span class="comment">// Data model</span>
+<span class="keyword">public static class</span> FarmerRecord {
+    <span class="keyword">public final</span> String farmerName;
+    <span class="keyword">public final</span> String crop;
+    <span class="keyword">public final</span> <span class="keyword">double</span> quantity;
+
+    <span class="keyword">public</span> FarmerRecord(String farmerName, String crop, <span class="keyword">double</span> quantity) {
+        <span class="keyword">this</span>.farmerName = farmerName;
+        <span class="keyword">this</span>.crop = crop;
+        <span class="keyword">this</span>.quantity = quantity;
+    }
+}</pre>
+
+    <h3>4.6 RecyclerView Adapter</h3>
+    <p>Uses the platform's <code>simple_list_item_2</code> layout (two TextViews) for simplicity. In a production app you'd use a custom layout.</p>
+
+    <div class="file-label">MainActivity.java · RecordAdapter</div>
+    <pre class="code-block"><span class="comment">// RecyclerView Adapter</span>
+<span class="keyword">private static class</span> RecordAdapter <span class="keyword">extends</span> RecyclerView.Adapter<RecordAdapter.RecordViewHolder> {
+    <span class="keyword">private final</span> List<FarmerRecord> records;
+
+    <span class="keyword">public</span> RecordAdapter(List<FarmerRecord> records) {
+        <span class="keyword">this</span>.records = records;
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> RecordViewHolder onCreateViewHolder(ViewGroup parent, <span class="keyword">int</span> viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(android.R.layout.simple_list_item_2, parent, <span class="keyword">false</span>);
+        <span class="keyword">return new</span> RecordViewHolder(view);
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public void</span> onBindViewHolder(RecordViewHolder holder, <span class="keyword">int</span> position) {
+        FarmerRecord record = records.get(position);
+        holder.text1.setText(record.farmerName + <span class="string">" — "</span> + record.crop);
+        holder.text2.setText(String.format(<span class="string">"%.2f kg"</span>, record.quantity));
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public int</span> getItemCount() {
+        <span class="keyword">return</span> records.size();
+    }
+
+    <span class="keyword">static class</span> RecordViewHolder <span class="keyword">extends</span> RecyclerView.ViewHolder {
+        TextView text1, text2;
+
+        <span class="keyword">public</span> RecordViewHolder(View itemView) {
+            <span class="keyword">super</span>(itemView);
+            text1 = itemView.findViewById(android.R.id.text1);
+            text2 = itemView.findViewById(android.R.id.text2);
+            text1.setTextSize(16);
+            text2.setTextSize(14);
+        }
+    }
+}</pre>
+
+    <h3>4.7 Complete Activity File</h3>
+    <details>
+        <summary>Click to expand full MainActivity.java</summary>
+        <pre class="code-block"><span class="keyword">package</span> com.example.farmerrecords;
+
+<span class="keyword">import</span> android.os.Bundle;
+<span class="keyword">import</span> android.text.TextUtils;
+<span class="keyword">import</span> android.util.Patterns;
+<span class="keyword">import</span> android.view.View;
+<span class="keyword">import</span> android.widget.Button;
+<span class="keyword">import</span> android.widget.EditText;
+<span class="keyword">import</span> android.widget.TextView;
+<span class="keyword">import</span> android.widget.Toast;
+
+<span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;
+<span class="keyword">import</span> androidx.recyclerview.widget.LinearLayoutManager;
+<span class="keyword">import</span> androidx.recyclerview.widget.RecyclerView;
+
+<span class="keyword">import</span> com.google.android.material.textfield.TextInputLayout;
+
+<span class="keyword">import</span> java.util.ArrayList;
+<span class="keyword">import</span> java.util.List;
+
+<span class="keyword">public class</span> MainActivity <span class="keyword">extends</span> AppCompatActivity {
+
+    <span class="comment">// View references</span>
+    <span class="keyword">private</span> TextInputLayout layoutFarmerName, layoutCrop, layoutQuantity;
+    <span class="keyword">private</span> EditText editTextFarmerName, editTextCrop, editTextQuantity;
+    <span class="keyword">private</span> Button buttonSubmit;
+    <span class="keyword">private</span> TextView textViewRecordCount;
+    <span class="keyword">private</span> RecyclerView recyclerViewRecords;
+
+    <span class="comment">// Data</span>
+    <span class="keyword">private</span> List<FarmerRecord> recordList = <span class="keyword">new</span> ArrayList<>();
+    <span class="keyword">private</span> RecordAdapter recordAdapter;
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">protected void</span> onCreate(Bundle savedInstanceState) {
+        <span class="keyword">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        <span class="comment">// Bind views</span>
+        layoutFarmerName = findViewById(R.id.layoutFarmerName);
+        layoutCrop = findViewById(R.id.layoutCrop);
+        layoutQuantity = findViewById(R.id.layoutQuantity);
+        editTextFarmerName = findViewById(R.id.editTextFarmerName);
+        editTextCrop = findViewById(R.id.editTextCrop);
+        editTextQuantity = findViewById(R.id.editTextQuantity);
+        buttonSubmit = findViewById(R.id.buttonSubmit);
+        textViewRecordCount = findViewById(R.id.textViewRecordCount);
+        recyclerViewRecords = findViewById(R.id.recyclerViewRecords);
+
+        <span class="comment">// Setup RecyclerView</span>
+        recordAdapter = <span class="keyword">new</span> RecordAdapter(recordList);
+        recyclerViewRecords.setLayoutManager(<span class="keyword">new</span> LinearLayoutManager(<span class="keyword">this</span>));
+        recyclerViewRecords.setAdapter(recordAdapter);
+        recyclerViewRecords.setHasFixedSize(<span class="keyword">true</span>);
+
+        <span class="comment">// Restore draft values on rotation</span>
+        <span class="keyword">if</span> (savedInstanceState != <span class="keyword">null</span>) {
+            String draftName = savedInstanceState.getString(<span class="string">"draft_farmer_name"</span>, <span class="string">""</span>);
+            String draftCrop = savedInstanceState.getString(<span class="string">"draft_crop"</span>, <span class="string">""</span>);
+            String draftQuantity = savedInstanceState.getString(<span class="string">"draft_quantity"</span>, <span class="string">""</span>);
+            editTextFarmerName.setText(draftName);
+            editTextCrop.setText(draftCrop);
+            editTextQuantity.setText(draftQuantity);
+        }
+
+        buttonSubmit.setOnClickListener(v -> onSubmit());
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">protected void</span> onSaveInstanceState(Bundle outState) {
+        <span class="keyword">super</span>.onSaveInstanceState(outState);
+        outState.putString(<span class="string">"draft_farmer_name"</span>, editTextFarmerName.getText().toString());
+        outState.putString(<span class="string">"draft_crop"</span>, editTextCrop.getText().toString());
+        outState.putString(<span class="string">"draft_quantity"</span>, editTextQuantity.getText().toString());
+    }
+
+    <span class="keyword">private void</span> onSubmit() { ... }
+
+    <span class="comment">// Data model</span>
+    <span class="keyword">public static class</span> FarmerRecord { ... }
+
+    <span class="comment">// RecyclerView Adapter</span>
+    <span class="keyword">private static class</span> RecordAdapter { ... }
+}</pre>
+    </details>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">5·</span> Themes & Dependencies</h2>
+    <p>The OutlinedBox text-field style only works when the app theme inherits from <code>Theme.MaterialComponents</code> (e.g. <code>Theme.MaterialComponents.DayNight.DarkActionBar</code>). With a plain AppCompat theme the app crashes on launch.</p>
+
+    <div class="file-label">themes.xml</div>
+    <pre class="code-block"><span class="keyword"><resources</span> xmlns:tools=<span class="string">"http://schemas.android.com/tools"</span><span class="keyword">></span>
+    <span class="comment"><!-- Base application theme. --></span>
+    <span class="keyword"><style name=</span><span class="string">"Theme.Farmerrecords"</span> parent=<span class="string">"Theme.MaterialComponents.DayNight.DarkActionBar"</span><span class="keyword">></span>
+        <span class="keyword"><item name=</span><span class="string">"colorPrimary"</span><span class="keyword">></span>@color/purple_500<span class="keyword"></item></span>
+        <span class="keyword"><item name=</span><span class="string">"colorPrimaryVariant"</span><span class="keyword">></span>@color/purple_700<span class="keyword"></item></span>
+        <span class="keyword"><item name=</span><span class="string">"colorOnPrimary"</span><span class="keyword">></span>@color/white<span class="keyword"></item></span>
+        <span class="keyword"><item name=</span><span class="string">"colorSecondary"</span><span class="keyword">></span>@color/teal_200<span class="keyword"></item></span>
+        <span class="keyword"><item name=</span><span class="string">"colorSecondaryVariant"</span><span class="keyword">></span>@color/teal_700<span class="keyword"></item></span>
+        <span class="keyword"><item name=</span><span class="string">"colorOnSecondary"</span><span class="keyword">></span>@color/black<span class="keyword"></item></span>
+        <span class="keyword"><item name=</span><span class="string">"android:statusBarColor"</span> tools:targetApi=<span class="string">"l"</span><span class="keyword">></span>?attr/colorPrimaryVariant<span class="keyword"></item></span>
+    <span class="keyword"></style></span>
+<span class="keyword"></resources></span></pre>
+
+    <div class="file-label">build.gradle (app module) — key dependencies</div>
+    <pre class="code-block"><span class="keyword">dependencies</span> {
+    implementation <span class="string">'androidx.appcompat:appcompat:1.6.1'</span>
+    implementation <span class="string">'com.google.android.material:material:1.11.0'</span>
+    implementation <span class="string">'androidx.recyclerview:recyclerview:1.3.2'</span>
+    implementation <span class="string">'androidx.constraintlayout:constraintlayout:2.1.4'</span>
+    ...
+}</pre>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">6·</span> Execution & Evidence</h2>
+    <p>Run the app from Android Studio on an emulator or physical device and capture each stage below.</p>
+
+    <h3>Step 1 — App launches with empty form</h3>
+    <p><em>Screenshot placeholder: empty form showing "Farmer Records" title, three outlined fields (Farmer Name/Reference, Crop, Quantity), "Add Record" button, "Records: 0", empty list area.</em></p>
+
+    <h3>Step 2 — Validation errors on submit with missing/invalid data</h3>
+    <p><em>Screenshot placeholder: red error text under each field — "Please enter farmer name or reference", "Please enter crop name", "Please enter quantity in kg". Record count still 0, list empty.</em></p>
+
+    <h3>Step 3 — Quantity validation: negative, non-numeric, non-finite</h3>
+    <p><em>Screenshot placeholders showing each error variant: "Quantity cannot be negative", "Quantity must be a valid number", "Quantity must be a finite number".</em></p>
+
+    <h3>Step 4 — Valid record added</h3>
+    <p><em>Screenshot placeholder: form filled (e.g., "John Kamau", "Maize", "50.5"), after tap "Add Record" — form clears, record appears at top of list: "John Kamau — Maize / 50.50 kg", count shows "Records: 1".</em></p>
+
+    <h3>Step 5 — Multiple records</h3>
+    <p><em>Screenshot placeholder: list with 3–4 records, newest at top, count updates accordingly.</em></p>
+
+    <h3>Step 6 — Rotation with partially completed form</h3>
+    <p><em>Screenshot placeholder: form half-filled (e.g., name and crop entered), rotate device → form values restored, list and count unchanged.</em></p>
+
+    <h3>Step 7 — Home / Return</h3>
+    <p>Press Home, reopen app from launcher → Activity recreated, draft values restored (if rotation didn't happen, they're still in memory), list and count intact.</p>
+
+    <h3>Step 8 — Process restart</h3>
+    <p>Swipe app away from Recents, relaunch → <strong>draft values lost</strong> (expected), <strong>record list lost</strong> (expected — in-memory only). This demonstrates that <code>onSaveInstanceState</code> does not survive process death; persistent storage would be needed for that.</p>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">7·</span> Lifecycle Trace & Explanation</h2>
+    <p>Predicted vs observed lifecycle sequence for each case:</p>
+
+    <table class="validation-table">
+        <thead>
+            <tr>
+                <th>Scenario</th>
+                <th>Predicted Sequence</th>
+                <th>Observed (Logcat)</th>
+                <th>Explanation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cold launch</td>
+                <td>onCreate → onStart → onResume</td>
+                <td>Matches</td>
+                <td>Fresh process, no savedInstanceState</td>
+            </tr>
+            <tr>
+                <td>Rotation</td>
+                <td>onPause → onStop → onDestroy → onCreate → onStart → onResume</td>
+                <td>Matches</td>
+                <td>Activity recreated; savedInstanceState non-null → draft restored</td>
+            </tr>
+            <tr>
+                <td>Home press</td>
+                <td>onPause → onStop</td>
+                <td>Matches</td>
+                <td>Activity stopped, process alive</td>
+            </tr>
+            <tr>
+                <td>Return from Home</td>
+                <td>onRestart → onStart → onResume</td>
+                <td>Matches</td>
+                <td>Activity restarted, no recreation</td>
+            </tr>
+            <tr>
+                <td>Process restart (swipe from recents)</td>
+                <td>onPause → onStop → onDestroy → (process dies) → onCreate → onStart → onResume</td>
+                <td>Matches</td>
+                <td>New process, savedInstanceState is null → draft lost, list lost</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>What survives what?</h3>
+    <ul>
+        <li><strong>Screen state (draft field values):</strong> saved in <code>onSaveInstanceState</code> → survives rotation, Home/return; <strong>does not survive</strong> process restart.</li>
+        <li><strong>SavedInstanceState bundle:</strong> survives rotation and Home/return (process alive); <strong>does not survive</strong> process restart.</li>
+        <li><strong>In-memory record list:</strong> survives rotation and Home/return (process alive); <strong>does not survive</strong> process restart.</li>
+        <li><strong>Persistent storage (Room/SharedPreferences/files):</strong> would survive everything — <em>not implemented in this lab</em>.</li>
+    </ul>
+
+    <div class="warning">
+        <strong>⚠ Key distinction:</strong> A correct display (list shows records) does <em>not</em> prove a record is safely stored. The list is an in-memory <code>ArrayList</code> backed by the adapter. If the process is killed (low memory, user swipes away, crash), the data is gone. For MavunoLink, farmer records must be written to a local database (Room) and synced to the server — the UI list is just a view of that persisted data.
+    </div>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">8·</span> Design Choices, Defect Corrected, Limitation</h2>
+
+    <h3>Design Choice 1: In-memory list + RecyclerView (no database yet)</h3>
+    <p><strong>Reasoning:</strong> The lab focuses on input, validation, list display, and lifecycle — not persistence. Using an <code>ArrayList</code> + adapter keeps code minimal and makes the connection between input → model → adapter → visible list obvious. For MavunoLink, this would be replaced by a Room database with a DAO, and the RecyclerView would observe a LiveData/Flow from the DAO.</p>
+
+    <h3>Design Choice 2: Validation in Activity (not ViewModel)</h3>
+    <p><strong>Reasoning:</strong> For a single-screen lab, putting validation in the Activity is pragmatic and readable. In MavunoLink, validation logic would live in a ViewModel or a dedicated validator class, unit-testable without Android context.</p>
+
+    <h3>Defect Corrected: Quantity zero rejection</h3>
+    <p><strong>Original bug:</strong> Early version rejected zero (treated as invalid). <strong>Correction:</strong> Changed condition from <code>quantity <= 0</code> to <code>quantity < 0</code> and added explicit <code>Double.isFinite</code> check. Zero is a valid business event (zero weekly harvest) — different from the earlier delivery exercise which required <em>positive</em> quantity for a "delivery".</p>
+
+    <h3>Limitation: No persistent storage</h3>
+    <p>Records are lost on process restart. In MavunoLink, every accepted record must be written to Room immediately, and the RecyclerView should observe the database. This lab intentionally omits Room to isolate the form/validation/list/lifecycle learning objectives.</p>
+</section>
+
+<hr/>
+
+<section>
+    <h2><span class="section-number">9·</span> Relation to MavunoLink</h2>
+    <ul>
+        <li><strong>Farmer identity:</strong> In MavunoLink, "Farmer Name / Reference" maps to a registered farmer ID (from the farmer registry). The app would validate against the local farmer cache or server.</li>
+        <li><strong>Crop:</strong> Would be a spinner/dropdown populated from the crop master data, not free text.</li>
+        <li><strong>Quantity:</strong> Server-side validation also applies (e.g., max plausible yield per acre). The client-side validation here is the first line of defense.</li>
+        <li><strong>Record list:</strong> In MavunoLink, this is a synced offline-first list — Room + WorkManager sync to backend. The UI list is a projection of the local database.</li>
+        <li><strong>Lifecycle:</strong> MavunoLink must handle background sync, network loss, and process death gracefully — ViewModel + SavedStateHandle + Room + WorkManager cover this.</li>
+    </ul>
+</section>
+
+<hr/>
+
+<footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #666; font-size: 14px;">
+    <p><strong>Lab_01_hm1 — Farmer Records, Validation and the Android Lifecycle</strong></p>
+    <p>Patrick Kilonzo Mbithi | SCT211-0036/2025 | BSc Computer Science | JKUAT ICS 2300</p>
+    <p>Submitted: 18 November 2026, 11:59 p.m. EAT</p>
+    <p>Environment: Android Studio Koala | Emulator API 34 | compileSdk 34 | minSdk 24</p>
+    <p>Evidence IDs: <code>lifecycle-trace-001</code>, <code>validation-table-002</code>, <code>rotation-test-003</code>, <code>restart-test-004</code></p>
+    <p>AI assistance: Used for HTML documentation generation; code written manually; logic verified by running on emulator.</p>
+</footer>
+
+</body>
+</html>
